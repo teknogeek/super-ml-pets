@@ -15,6 +15,7 @@ import os
 import sys
 import logging as log
 from .utils import opponent_generator
+import traceback
 
 
 def train_with_masks(ret):
@@ -23,7 +24,7 @@ def train_with_masks(ret):
     """
     # initialize environment
     env = SuperAutoPetsEnv(opponent_generator, valid_actions_only=True)
-    # eval_env = SuperAutoPetsEnv(opponent_generator, valid_actions_only=True)  # need separate eval env for
+    # eval_env = Monitor(SuperAutoPetsEnv(opponent_generator, valid_actions_only=True))  # need separate eval env for
     # EvalCallback (this is the wrong env - not working)
 
     # create folder to save log
@@ -43,8 +44,7 @@ def train_with_masks(ret):
     checkpoint_callback = CheckpointCallback(save_freq=ret.save_freq, save_path='./models/', name_prefix=ret.model_name)
 
     # save best model, using deterministic eval
-    # eval_callback = EvalCallback(eval_env, best_model_save_path='./models/', log_path='./logs/', eval_freq=1000,
-    #                              deterministic=True, render=False)
+    # eval_callback = EvalCallback(eval_env, best_model_save_path='./models/', log_path='./logs/', eval_freq=1000, deterministic=True, render=False)
 
     if ret.finetune is not None:
         # check if current python version differ from the one the model is trained with
@@ -98,9 +98,12 @@ def train_with_masks(ret):
             retry_counter += 1
         except ValueError as e3:
             log.info("ValueError: %s", e3)
+            traceback.print_exc()
+            print(env.player)
             retry_counter += 1
         except Exception as e4:
             log.info("Exception: %s", e4)
+            traceback.print_exc()
             retry_counter += 1
 
     # save best model
