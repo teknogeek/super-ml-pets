@@ -1,4 +1,4 @@
-git+https://github.com/alexdriedger/sapai-gym.git
+git+https://github.com/teknogeek/sapai-gym.git
 sb3-contrib==1.8.0
 keyboard
 pyautogui
